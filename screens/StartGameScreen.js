@@ -14,6 +14,10 @@ const StartGameScreen = () => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
     }
 
+    const resetInputHandler = () => {
+        setEnteredValue('');
+    }
+
     return (
         //when we click the screen the keyboard will be closed automatically
         <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
@@ -23,7 +27,7 @@ const StartGameScreen = () => {
                 <Text>Select a Number</Text>
                 <Input onChangeText={numberInputHandler} value={enteredValue} blurOnSubmit autoCapitalize='none' autoCorrect={false} keyboardType="number-pad" maxLength={2} style={styles.input} />
                 <View style={styles.buttonContainer}>
-                    <View style={styles.button}><Button title="Reset" onPress={() => {}} color={Colors.secondary} /></View>
+                    <View style={styles.button}><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary} /></View>
                     <View style={styles.button}><Button title="Confirm" onPress={() => {}} color={Colors.primary} /></View>
                 </View>
             </Card>
