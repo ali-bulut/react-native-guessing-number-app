@@ -5,6 +5,7 @@ import Colors from '../constants/colors';
 
 import Card from '../components/Card';
 import Input from '../components/Input';
+import NumberContainer from '../components/NumberContainer';
 
 const StartGameScreen = () => {
 
@@ -31,12 +32,18 @@ const StartGameScreen = () => {
         setConfirmed(true);
         setSelectedNumber(chosenNumber)
         setEnteredValue('');
+        Keyboard.dismiss();
     }
 
     let confirmedOutput;
 
     if(confirmed){
-        confirmedOutput = <Text>Chosen Number: {selectedNumber}</Text>
+        confirmedOutput = 
+        <Card style={styles.summaryContainer}>
+            <Text>You selected</Text>
+            <NumberContainer>{selectedNumber}</NumberContainer>
+            <Button title="Start The Game" />
+        </Card>
     }
 
     return (
@@ -46,7 +53,7 @@ const StartGameScreen = () => {
             <Text style={styles.title}>Start a New Game!</Text>
             <Card style={styles.inputContainer}>
                 <Text>Select a Number</Text>
-                <Input onChangeText={numberInputHandler} value={enteredValue} blurOnSubmit autoCapitalize='none' autoCorrect={false} keyboardType="number-pad" maxLength={2} style={styles.input} />
+                <Input onSubmitEditing={confirmInputHandler} onChangeText={numberInputHandler} value={enteredValue} blurOnSubmit autoCapitalize='none' autoCorrect={false} keyboardType="number-pad" maxLength={2} style={styles.input} />
                 <View style={styles.buttonContainer}>
                     <View style={styles.button}><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary} /></View>
                     <View style={styles.button}><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary} /></View>
@@ -86,6 +93,10 @@ const styles = StyleSheet.create({
     input:{
         width:50,
         textAlign:'center'
+    },
+    summaryContainer: {
+        marginTop:20,
+        alignItems:'center'
     }
 });
 
