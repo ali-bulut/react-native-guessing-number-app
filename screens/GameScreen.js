@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {View, Text, StyleSheet, Button, Alert} from 'react-native';
 
 import NumberContainer from '../components/NumberContainer';
@@ -20,12 +20,19 @@ const generateRandomBetween = (min,max,exclude) => {
 
 const GameScreen = (props) => {
     const [currentGuess, setCurrentGuess] = useState(generateRandomBetween(1, 100, props.userChoice));
+    const [rounds, setRounds] = useState(0);
 
     //if the component rerenders, react recognize these variables' last values.
     //so when the component rerenders currentLow will not be 1 and also currentHigh will not be 100
     const currentLow = useRef(1);
     const currentHigh = useRef(100);
 
+    //it will work only when the values(currentGuess, props.userChoice, props.onGameOver) change.
+    useEffect(()=>{
+        if(currentGuess === props.userChoice){
+            props.onGameOver(rounds);
+        }
+    }, [currentGuess, props.userChoice, props.onGameOver])
 
     const nextGuessHandler = (direction) => {
         //Validation operations
@@ -44,6 +51,7 @@ const GameScreen = (props) => {
 
         const nextNumber = generateRandomBetween(currentLow.current, currentHigh.current, currentGuess);
         setCurrentGuess(nextNumber);
+        setRounds(curRounds => curRounds + 1)
     }
 
     return (
