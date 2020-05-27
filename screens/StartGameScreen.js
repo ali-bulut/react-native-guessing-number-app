@@ -72,6 +72,8 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     title:{
+        //it comes from the definition which is applied on App.js file.
+        fontFamily:'open-sans-bold',
         fontSize:20,
         marginVertical: 10
     },
