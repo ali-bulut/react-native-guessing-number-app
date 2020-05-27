@@ -1,9 +1,10 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, Text, StyleSheet, Alert, ScrollView, FlatList} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 
 import NumberContainer from '../components/NumberContainer';
 import Card from '../components/Card';
+import BodyText from '../components/BodyText';
 import TitleText from '../components/TitleText';
 import MainButton from '../components/MainButton';
 
@@ -21,9 +22,18 @@ const generateRandomBetween = (min,max,exclude) => {
     }
 }
 
+const renderListItem = (value, numOfRound) => {
+    return <View key={value} style={styles.listItem}>
+            <BodyText>#{numOfRound}</BodyText>
+            <BodyText>{value}</BodyText>
+        </View>
+}
+
 const GameScreen = (props) => {
-    const [currentGuess, setCurrentGuess] = useState(generateRandomBetween(1, 100, props.userChoice));
-    const [rounds, setRounds] = useState(0);
+    const initialGuess = generateRandomBetween(1, 100, props.userChoice);
+
+    const [currentGuess, setCurrentGuess] = useState(initialGuess);
+    const [pastGuesses, setPastGuesses] = useState([initialGuess]);
 
     //if the component rerenders, react recognize these variables' last values.
     //so when the component rerenders currentLow will not be 1 and also currentHigh will not be 100
@@ -33,7 +43,7 @@ const GameScreen = (props) => {
     //it will work only when the values(currentGuess, props.userChoice, props.onGameOver) change.
     useEffect(()=>{
         if(currentGuess === props.userChoice){
-            props.onGameOver(rounds);
+            props.onGameOver(pastGuesses.length);
         }
     }, [currentGuess, props.userChoice, props.onGameOver])
 
@@ -47,14 +57,15 @@ const GameScreen = (props) => {
             currentHigh.current = currentGuess;
         }
         else if(direction === 'greater'){
-            currentLow.current = currentGuess;
+            currentLow.current = currentGuess + 1;
         }else{
             return;
         }
 
         const nextNumber = generateRandomBetween(currentLow.current, currentHigh.current, currentGuess);
         setCurrentGuess(nextNumber);
-        setRounds(curRounds => curRounds + 1)
+        // setRounds(curRounds => curRounds + 1)
+        setPastGuesses(curPassGuesses => [nextNumber ,...curPassGuesses])
     }
 
     return (
@@ -65,6 +76,11 @@ const GameScreen = (props) => {
                 <MainButton onPress={() => nextGuessHandler('lower')} > <Ionicons name="md-arrow-down" size={24} color="white" /> </MainButton>
                 <MainButton onPress={() => nextGuessHandler('greater')} > <Ionicons name="md-arrow-up" size={24} color="white" /> </MainButton>
             </Card>
+            <View style={styles.listContainer}>
+            <ScrollView contentContainerStyle={styles.list}>
+                {pastGuesses.map((guess, index) =>  renderListItem(guess, pastGuesses.length - index))}
+            </ScrollView>
+            </View>
         </View>
     );
 };
@@ -81,6 +97,27 @@ const styles = StyleSheet.create({
         marginTop:20,
         width:400,
         maxWidth:'90%'
+    },
+    listContainer:{
+        //we should write this for android to scroll
+        flex:1,
+        width:'80%'
+    },
+    list:{
+        //generally uses for scrollview for more flexibility. There is not much differrence between flex:1
+        flexGrow:1,
+        alignItems: 'center',
+        justifyContent:'flex-end'
+    },
+    listItem:{
+        borderColor:'#ccc',
+        borderWidth: 1,
+        padding: 15,
+        marginVertical: 10,
+        backgroundColor: 'white',
+        flexDirection:'row',
+        justifyContent:'space-between',
+        width:'60%'
     }
 });
 
