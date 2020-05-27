@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Button, TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, StyleSheet, Button, TouchableWithoutFeedback, Keyboard, Alert, Dimensions, ScrollView, KeyboardAvoidingView} from 'react-native';
 
 import Colors from '../constants/colors';
 
@@ -15,6 +15,24 @@ const StartGameScreen = (props) => {
     const [enteredValue, setEnteredValue] = useState('');
     const [confirmed, setConfirmed] = useState(false);
     const [selectedNumber, setSelectedNumber] = useState();
+    const [buttonWidth, setButtonWidth] = useState(Dimensions.get('window').width / 4);
+
+
+    
+
+    useEffect(() => {
+        //we use this because normally dimensions calculate only once. So when the position is reverse portrait to
+    //landscape we should re-edit this.
+    const updateLayout = () => {
+        setButtonWidth(Dimensions.get('window').width / 4)
+    }
+    Dimensions.addEventListener('change', updateLayout);
+
+    //it runs before useEffect runs!
+    return () => {
+        Dimensions.removeEventListener('change', updateLayout);
+    }
+    })
 
     const numberInputHandler = (inputText) => {
         //we replace the text to nothing except numbers
@@ -50,7 +68,10 @@ const StartGameScreen = (props) => {
     }
 
     return (
-        //when we click the screen the keyboard will be closed automatically
+        <ScrollView>
+            {/* we should use this inside of the scrollview */}
+        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={30}>
+        {/* when we click the screen the keyboard will be closed automatically */}
         <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
         <View style={styles.screen}>
             <TitleText style={styles.title}>Start a New Game!</TitleText>
@@ -58,13 +79,15 @@ const StartGameScreen = (props) => {
                 <BodyText style={styles.text}>Select a Number</BodyText>
                 <Input onSubmitEditing={confirmInputHandler} onChangeText={numberInputHandler} value={enteredValue} blurOnSubmit autoCapitalize='none' autoCorrect={false} keyboardType="number-pad" maxLength={2} style={styles.input} />
                 <View style={styles.buttonContainer}>
-                    <View style={styles.button}><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary} /></View>
-                    <View style={styles.button}><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary} /></View>
+                    <View style={{width: buttonWidth}}><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary} /></View>
+                    <View style={{width: buttonWidth}}><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary} /></View>
                 </View>
             </Card>
             {confirmedOutput}
         </View>     
         </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+        </ScrollView>
     );
 };
 
@@ -81,8 +104,9 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     inputContainer:{
-        width:300,
-        maxWidth:'80%',
+        width:'80%',
+        maxWidth: '95%',
+        minWidth: 300,
         alignItems:'center'
     },
     buttonContainer:{
@@ -92,9 +116,14 @@ const styles = StyleSheet.create({
         justifyContent:'space-between',
         paddingHorizontal:15
     },
-    button:{
-        width: 100
-    },
+    // button:{
+    //     // width: 100
+    //     //there are 2 options. Screen and window. It doesnt matter on IOS. But on Android when we use window,
+    //     //status bar height will be excluded from the calculation. So window is better choice.
+    //     //we can use also width: '40%' but !!! if we use width:'40%' for children it is used for its parent size.
+    //     //but if we use dimensions, it doesnt matter. It always get the device's whole screen.
+    //     width: Dimensions.get('window').width / 4
+    // },
     input:{
         width:50,
         textAlign:'center'

@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {View, Text, StyleSheet, Alert, ScrollView, FlatList} from 'react-native';
+import {View, Text, StyleSheet, Alert, ScrollView, Dimensions} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 import NumberContainer from '../components/NumberContainer';
 import Card from '../components/Card';
@@ -30,10 +31,30 @@ const renderListItem = (value, numOfRound) => {
 }
 
 const GameScreen = (props) => {
+
+    //normally we set the orientation position on app.json but with the help of expo we can change it when the app's running
+    // ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+
     const initialGuess = generateRandomBetween(1, 100, props.userChoice);
 
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
     const [pastGuesses, setPastGuesses] = useState([initialGuess]);
+
+
+    const [availabledeviceWidth, setAvailableDeviceWidth] = useState(Dimensions.get('window').width);
+    const [availabledeviceHeight, setAvailableDeviceHeight] = useState(Dimensions.get('window').height);
+
+    useEffect(() => {
+        const updateLayout = () => {
+            setAvailableDeviceWidth(Dimensions.get('window').width);
+            setAvailableDeviceHeight(Dimensions.get('window').height);
+        }
+        Dimensions.addEventListener('change', updateLayout);
+
+        return () => {
+            Dimensions.removeEventListener('change', updateLayout);
+        }
+    })
 
     //if the component rerenders, react recognize these variables' last values.
     //so when the component rerenders currentLow will not be 1 and also currentHigh will not be 100
@@ -68,6 +89,22 @@ const GameScreen = (props) => {
         setPastGuesses(curPassGuesses => [nextNumber ,...curPassGuesses])
     }
 
+    if(availabledeviceHeight < 500){
+        return (<View style={styles.screen}>
+        <TitleText>Opponent's Guess</TitleText>
+        <View style={{flexDirection:'row', justifyContent:'space-around', width:'80%', alignItems:'center'}}>
+        <MainButton onPress={() => nextGuessHandler('lower')}> <Ionicons name="md-arrow-down" size={24} color="white" /> </MainButton>
+        <NumberContainer>{currentGuess}</NumberContainer>
+        <MainButton onPress={() => nextGuessHandler('greater')}> <Ionicons name="md-arrow-up" size={24} color="white" /> </MainButton>
+        </View>
+        <View style={styles.listContainer}>
+        <ScrollView contentContainerStyle={styles.list}>
+            {pastGuesses.map((guess, index) =>  renderListItem(guess, pastGuesses.length - index))}
+        </ScrollView>
+        </View>
+    </View>)
+    }
+
     return (
         <View style={styles.screen}>
             <TitleText>Opponent's Guess</TitleText>
@@ -94,14 +131,14 @@ const styles = StyleSheet.create({
     buttonContainer:{
         flexDirection:'row',
         justifyContent:'space-around',
-        marginTop:20,
+        marginTop:Dimensions.get('window').height > 600 ? 20 : 5,
         width:400,
         maxWidth:'90%'
     },
     listContainer:{
         //we should write this for android to scroll
         flex:1,
-        width:'80%'
+        width: '80%'
     },
     list:{
         //generally uses for scrollview for more flexibility. There is not much differrence between flex:1
