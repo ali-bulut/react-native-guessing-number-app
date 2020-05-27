@@ -1,24 +1,63 @@
-import React from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, Button, Image } from "react-native";
 
+import BodyText from "../components/BodyText";
+import TitleText from "../components/TitleText";
+import Colors from '../constants/colors';
+import MainButton from '../components/MainButton';
 
 const GameOverScreen = (props) => {
-    return (
-        <View style={styles.screen}>
-            <Text>The Game is over!</Text>
-            <Text>Number of Rounds: {props.roundsNumber}</Text>
-            <Text>Number was: {props.userNumber}</Text>
-            <Button title="New Game" onPress={props.onRestart} />
-        </View>        
-    );
+  return (
+    <View style={styles.screen}>
+      <TitleText>The Game is over!</TitleText>
+      <View style={styles.imageContainer}>
+        <Image 
+        source={require("../assets/success.png")}
+        // source={{uri:'https://miro.medium.com/max/6563/1*QqoS6WsjG6WSr9-BFFQhbA.jpeg'}} 
+        style={styles.image} />
+      </View>
+      <View style={styles.resultContainer}>
+      <BodyText style={styles.resultText}>Your phone needed <Text style={styles.highlight}>{props.roundsNumber}</Text> rounds to guess the number 
+      <Text style={styles.highlight}> {props.userNumber}</Text></BodyText>
+      </View>
+      <MainButton onPress={props.onRestart}>New Game</MainButton>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    screen:{
-        flex:1,
-        justifyContent:'center',
-        alignItems:'center'
-    }
+  screen: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  imageContainer:{
+      width: 300,
+      height:300,
+      //borderRadius should be half of the width and height
+      borderRadius:150,
+      borderWidth:3,
+      borderColor:'black',
+      //by using this, imageContainer collapse its children
+      overflow:'hidden',
+      marginVertical:30
+  },
+  resultText: {
+    textAlign:'center',
+    fontSize:20
+  },
+  highlight: {
+    color:Colors.primary,
+    fontFamily:'open-sans-bold'
+  },
+  resultContainer: {
+      marginHorizontal:30,
+      marginVertical:15
+  }
 });
 
 export default GameOverScreen;

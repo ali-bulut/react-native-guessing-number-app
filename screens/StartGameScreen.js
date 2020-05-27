@@ -6,6 +6,9 @@ import Colors from '../constants/colors';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import NumberContainer from '../components/NumberContainer';
+import BodyText from '../components/BodyText';
+import TitleText from '../components/TitleText';
+import MainButton from '../components/MainButton';
 
 const StartGameScreen = (props) => {
 
@@ -40,9 +43,9 @@ const StartGameScreen = (props) => {
     if(confirmed){
         confirmedOutput = 
         <Card style={styles.summaryContainer}>
-            <Text>You selected</Text>
+            <BodyText>You selected</BodyText>
             <NumberContainer>{selectedNumber}</NumberContainer>
-            <Button title="Start The Game" onPress={() => props.onStartGame(selectedNumber)} />
+            <MainButton onPress={() => props.onStartGame(selectedNumber)}>Start The Game</MainButton>
         </Card>
     }
 
@@ -50,9 +53,9 @@ const StartGameScreen = (props) => {
         //when we click the screen the keyboard will be closed automatically
         <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
         <View style={styles.screen}>
-            <Text style={styles.title}>Start a New Game!</Text>
+            <TitleText style={styles.title}>Start a New Game!</TitleText>
             <Card style={styles.inputContainer}>
-                <Text>Select a Number</Text>
+                <BodyText style={styles.text}>Select a Number</BodyText>
                 <Input onSubmitEditing={confirmInputHandler} onChangeText={numberInputHandler} value={enteredValue} blurOnSubmit autoCapitalize='none' autoCorrect={false} keyboardType="number-pad" maxLength={2} style={styles.input} />
                 <View style={styles.buttonContainer}>
                     <View style={styles.button}><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary} /></View>
@@ -99,6 +102,9 @@ const styles = StyleSheet.create({
     summaryContainer: {
         marginTop:20,
         alignItems:'center'
+    },
+    text:{
+        fontFamily:'open-sans',
     }
 });
 
